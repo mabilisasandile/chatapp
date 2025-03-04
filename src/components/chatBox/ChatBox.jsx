@@ -7,6 +7,7 @@ import { db } from '../../config/firebase'
 import { toast } from 'react-toastify'
 import uploadImageToCloudinary from '../../lib/upload'
 
+
 const ChatBox = () => {
 
   const {userData, messagesId, chatUser, messages, setMessages, chatVisible, setChatVisible} = useContext(AppContext);
@@ -15,7 +16,9 @@ const ChatBox = () => {
 
   const sendMessage = async () => {
     try {
-      
+      console.log("input: ",input);
+      console.log("messagesId: ",messagesId);
+
       if (input && messagesId) {
         await updateDoc(doc(db,'message',messagesId),{
           messages: arrayUnion({
@@ -88,7 +91,6 @@ const ChatBox = () => {
             })
           }
         })
-
       }
 
     }  catch (error) {
@@ -112,6 +114,8 @@ const ChatBox = () => {
 
 
   useEffect(()=>{
+    console.log("userData: ",userData);
+
     if (messagesId) {
       const unSub = onSnapshot(doc(db,'messages',messagesId),(res)=>{
         setMessages(res.data().messages.reverse())
@@ -125,9 +129,15 @@ const ChatBox = () => {
 
   return chatUser ? (
     <div className={`chat-box ${chatVisible ? "" : "hidden"}`}>
-      <div className="chat-user">
+      {/* <div className="chat-user">
         <img src={chatUser.userData.avatar} alt="" />
         <p>{chatUser.userData.name} {Date.now() - chatUser.userData.lastSeen <= 70000 ? <img src={assets.green_dot} className='dot' alt="" /> : null}</p>
+        <img src={assets.help_icon} className='help' alt="" />
+        <img onClick={()=>setChatVisible(false)} src={assets.arrow_icon} className='arrow' alt="" />
+      </div> */}
+      <div className="chat-user">
+        <img src={chatUser.avatar} alt="" />
+        <p>{chatUser.name} {Date.now() - chatUser.lastSeen <= 70000 ? <img src={assets.green_dot} className='dot' alt="" /> : null}</p>
         <img src={assets.help_icon} className='help' alt="" />
         <img onClick={()=>setChatVisible(false)} src={assets.arrow_icon} className='arrow' alt="" />
       </div>

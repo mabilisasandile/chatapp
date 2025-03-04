@@ -108,10 +108,12 @@ const LeftSidebar = () => {
       const userChatsData = userChatsSnapshot.data();
       const chatIndex = userChatsData.chatsData.findIndex((c)=>c.messageId === item.messageId);
       userChatsData.chatsData[chatIndex].messageSeen = true;
-    await updateDoc(userChatsRef,{
-      chatsData:userChatsData.chatsData
-    })
-    setChatVisible(true);
+      await updateDoc(userChatsRef,{
+        chatsData:userChatsData.chatsData
+      })
+      
+      setChatVisible(true);
+
     } catch (error) {
       toast.error(error.message);
       console.log(error);
@@ -163,9 +165,9 @@ const LeftSidebar = () => {
         :
         chatData.map((item, index) => (
           <div onClick={()=>setChat(item)} key={index} className={`friends ${item.messageSeen || item.messageId === messagesId ? "" : "border"}`} >
-            <img src={item.userData.avatar} alt="" />
+            <img src={item.avatar} alt="" />
             <div>
-              <p>{item.userData.name}</p>
+              <p>{item.name}</p>
               <span>{item.lastMessage}</span>
             </div>
           </div>
