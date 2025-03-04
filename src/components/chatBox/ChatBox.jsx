@@ -17,6 +17,7 @@ const ChatBox = () => {
   const sendMessage = async () => {
     try {
       console.log("input: ",input);
+      console.log("chatUser: ",chatUser);
       console.log("messagesId: ",messagesId);
 
       if (input && messagesId) {
@@ -53,12 +54,14 @@ const ChatBox = () => {
       console.log(error);
       toast.error(error.message);
     }
+    setInput("");
   }
 
 
   const sendImage = async (e) => {
-    try {
-      
+    setImage(e.target.files[0]);
+    
+    try { 
       const cloudName = "dccsxcslg";
       const uploadPreset = "my_upload_preset";
       const fileUrl = await uploadImageToCloudinary(image, cloudName, uploadPreset);
@@ -162,7 +165,7 @@ const ChatBox = () => {
 
       <div className="chat-input">
         <input onChange={(e)=>setInput(e.target.value)} value={input} type="text" placeholder='Send a message' />
-        <input type="file" id='image' accept='image/png, image/jpeg' hidden />
+        <input onChange={sendImage} type="file" id='image' accept='image/png, image/jpeg' hidden />
         <label htmlFor="image">
           <img src={assets.gallery_icon} alt="" />
         </label>

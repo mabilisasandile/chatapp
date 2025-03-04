@@ -82,13 +82,14 @@ const LeftSidebar = () => {
       const uSnap = await getDoc(doc(db,"users",user.id));
       const uData = uSnap.data();
       setChat({
-        messagesId: newMessageRef.id,
+        messageId: newMessageRef.id,
         lastMessage: "",
         rId: user.id,
         updatedAt: Date.now(),
         messageSeen: true,
         userData: uData
       })
+      setMessagesId(newMessageRef.id); // Set messagesId here
       setShowSearch(false);
       setChatVisible(true);
 
@@ -98,28 +99,32 @@ const LeftSidebar = () => {
     }
   }
 
-
   const setChat = async (item) => {
+
     try {
+      console.log("chatData: ", chatData)
+      console.log("user: ", user)
+
       setMessagesId(item.messageId);
       setChatUser(item);
-      const userChatsRef = doc(db,'chats',userData.id);
+      const userChatsRef = doc(db, 'chats', userData.id);
       const userChatsSnapshot = await getDoc(userChatsRef);
       const userChatsData = userChatsSnapshot.data();
-      const chatIndex = userChatsData.chatsData.findIndex((c)=>c.messageId === item.messageId);
-      userChatsData.chatsData[chatIndex].messageSeen = true;
-      await updateDoc(userChatsRef,{
-        chatsData:userChatsData.chatsData
-      })
-      
+      const chatIndex = userChatsData.chatsData.findIndex((c) => c.messageId === item.messageId);
+  
+      if (chatIndex !== -1) {
+        userChatsData.chatsData[chatIndex].messageSeen = true;
+        await updateDoc(userChatsRef, {
+          chatsData: userChatsData.chatsData,
+        });
+      }
+  
       setChatVisible(true);
-
     } catch (error) {
       toast.error(error.message);
       console.log(error);
     }
-  }
-
+  };
 
   useEffect(()=>{
     const updateChatUserData = async () => {
@@ -134,7 +139,6 @@ const LeftSidebar = () => {
     updateChatUserData();
 
   },[chatData])
-
 
   return (
     <div className={`ls ${chatVisible ? "hidden" : ""}`}>
@@ -165,8 +169,10 @@ const LeftSidebar = () => {
         :
         chatData.map((item, index) => (
           <div onClick={()=>setChat(item)} key={index} className={`friends ${item.messageSeen || item.messageId === messagesId ? "" : "border"}`} >
+            {/* <img src={item.userData.avatar} alt="" /> */}
             <img src={item.avatar} alt="" />
             <div>
+              {/* <p>{item.userData.name}</p> */}
               <p>{item.name}</p>
               <span>{item.lastMessage}</span>
             </div>
